@@ -7,7 +7,7 @@ const bot = new Telegraf(process.env.TOKEN)
 const broadcaster = new Broadcaster(bot)
 broadcaster.pause()
 
-bot.command('/broadcast', ctx => {
+bot.command('broadcast', ctx => {
     const replyMessage = ctx.message.reply_to_message
 
     if (replyMessage) {
@@ -17,23 +17,23 @@ bot.command('/broadcast', ctx => {
     }
 })
 
-bot.command('/stop', () => {
+bot.command('stop', () => {
     return broadcaster.pause()
 })
 
-bot.command('/run', () => {
+bot.command('run', () => {
     return broadcaster.resume()
 })
 
-bot.command('/reset', () => {
+bot.command('reset', () => {
     return broadcaster.reset()
 })
 
-bot.command('/terminate', () => {
+bot.command('terminate', () => {
     return broadcaster.terminate()
 })
 
-bot.command('/status', async ctx => {
+bot.command('status', async ctx => {
     const { failedCount, completedCount, waitingCount } = await broadcaster.status()
 
     return ctx.reply(
