@@ -4,11 +4,12 @@ class Broadcaster {
     constructor(bot, bullQueueOptions) {
         this.queue = new Queue('broadcast', bullQueueOptions)
         this.queue.process((job, done) => {
-            const { chatId, fromChatId, messageId, messageText, extra } = job.data
+            const { userId, chatId, fromChatId, messageId, messageText, extra } = job.data
 
+            console.log(job.data)
             if (messageId) {
                 return bot.telegram.callApi('copyMessage', {
-                    chat_id: chatId,
+                    chat_id: userId,
                     from_chat_id: fromChatId || chatId,
                     message_id: messageId,
                     ...extra,
@@ -17,13 +18,13 @@ class Broadcaster {
                     .catch(done)
             }
 
-            return bot.telegram.sendMessage(chatId, messageText, extra)
+            return bot.telegram.sendMessage(userId, messageText, extra)
                 .then(() => done())
                 .catch(done)
         })
     }
 
-    broadcast(chatIds, message, extra) {
+    broadcast(chatId, userIds, message, extra) {
         let jobData = message
 
         if (typeof message === 'string') {
@@ -33,12 +34,13 @@ class Broadcaster {
             }
         } else if (typeof message === 'number') {
             jobData = {
+                chatId: chatId,
                 messageId: message,
                 extra,
             }
         }
 
-        chatIds.forEach(chatId => this.queue.add({ chatId, ...jobData }))
+        userIds.forEach(userId => this.queue.add({ userId, ...jobData }))
     }
 
     reset() {
